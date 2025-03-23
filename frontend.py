@@ -4,7 +4,7 @@ import requests
 app = Flask(__name__)
 
 import os
-API_URL = "https://moodbasedmusicrec-production.up.railway.app"
+API_URL = "https://moodbasedmusicrec.onrender.com"
 
 @app.route('/')
 def home():
