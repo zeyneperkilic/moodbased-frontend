@@ -97,15 +97,6 @@
     let currentIntensity = 5;
     let currentScore = 0;
 
-    function openModalForPoint(index) {
-        currentSongUri = allSongs[index].uri;
-        currentScore = allSongs[index].weighted_score || 0;
-        currentIntensity = document.getElementById("moodIntensity").value;
-        const trackId = currentSongUri.split(':').pop();
-        document.getElementById('spotifyIframe').src = `https://open.spotify.com/embed/track/${trackId}`;
-        document.getElementById('songModal').style.display = "flex";
-    }
-
     function plot3D(songs) {
         let xValues = songs.map(song => song.PCA1);
         let yValues = songs.map(song => song.PCA2);
@@ -132,11 +123,16 @@
             scene: { camera: { eye: { x: 1.5, y: 1.5, z: 1.5 } } }
         };
 
-        Plotly.newPlot('moodChart', [trace], layout).then(() => {
-            document.getElementById('moodChart').on('plotly_click', function(data) {
-                const pointIndex = data.points[0].pointNumber;
-                openModalForPoint(pointIndex);
-            });
+        Plotly.newPlot('moodChart', [trace], layout);
+
+        document.getElementById('moodChart').on('plotly_click', function(data) {
+            const pointIndex = data.points[0].pointNumber;
+            currentSongUri = allSongs[pointIndex].uri;
+            currentScore = allSongs[pointIndex].weighted_score || 0;
+            currentIntensity = document.getElementById("moodIntensity").value;
+            const trackId = currentSongUri.split(':').pop();
+            document.getElementById('spotifyIframe').src = https://open.spotify.com/embed/track/${trackId};
+            document.getElementById('songModal').style.display = "flex";
         });
     }
 
@@ -152,7 +148,7 @@
             showToast("Please write a comment before submitting.");
             return;
         }
-        fetch('https://moodbasedmusicrec.onrender.com/feedback', {
+        fetch('http://127.0.0.1:8000/feedback', {
             method: 'POST',
             body: JSON.stringify({
                 song: currentSongUri,
@@ -176,4 +172,4 @@
     }
     </script>
 </body>
-</html>
+</html> 
