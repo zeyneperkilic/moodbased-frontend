@@ -37,7 +37,7 @@
     .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
     @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
     @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
-    </style>
+</style>
 </head>
 <body>
     <button class="home-btn" onclick="window.location.href='/'">HomePage</button>
@@ -69,7 +69,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h3>Spotify Player</h3>
-            <iframe id="spotifyIframe" src="" width="300" height="380" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+            <iframe id="spotifyIframe" src="" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 
             <h4>Give Feedback</h4>
             <textarea id="commentBox" placeholder="Write a comment..."></textarea>
@@ -96,6 +96,15 @@
     let currentClusterId = {{ cluster_id }};
     let currentIntensity = 5;
     let currentScore = 0;
+
+    function openModalForPoint(index) {
+        currentSongUri = allSongs[index].uri;
+        currentScore = allSongs[index].weighted_score || 0;
+        currentIntensity = document.getElementById("moodIntensity").value;
+        const trackId = currentSongUri.split(':').pop();
+        document.getElementById('spotifyIframe').src = `https://open.spotify.com/embed/track/${trackId}`;
+        document.getElementById('songModal').style.display = "flex";
+    }
 
     function plot3D(songs) {
         let xValues = songs.map(song => song.PCA1);
@@ -126,12 +135,7 @@
         Plotly.newPlot('moodChart', [trace], layout).then(() => {
             document.getElementById('moodChart').on('plotly_click', function(data) {
                 const pointIndex = data.points[0].pointNumber;
-                currentSongUri = allSongs[pointIndex].uri;
-                currentScore = allSongs[pointIndex].weighted_score || 0;
-                currentIntensity = document.getElementById("moodIntensity").value;
-                const trackId = currentSongUri.split(':').pop();
-                document.getElementById('spotifyIframe').src = `https://open.spotify.com/embed/track/${trackId}`;
-                document.getElementById('songModal').style.display = "flex";
+                openModalForPoint(pointIndex);
             });
         });
     }
