@@ -124,8 +124,10 @@
         };
 
         Plotly.newPlot('moodChart', [trace], layout).then(() => {
-            document.getElementById('moodChart').on('plotly_click', function(data) {
+            const chart = document.getElementById('moodChart');
+            chart.on('plotly_click', function(data) {
                 const pointIndex = data.points[0].pointNumber;
+                if (!allSongs[pointIndex]) return;
                 currentSongUri = allSongs[pointIndex].uri;
                 currentScore = allSongs[pointIndex].weighted_score || 0;
                 currentIntensity = document.getElementById("moodIntensity").value;
