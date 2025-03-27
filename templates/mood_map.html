@@ -127,13 +127,24 @@
 
         document.getElementById('moodChart').on('plotly_click', function(data) {
             const pointIndex = data.points[0].pointNumber;
-            currentSongUri = allSongs[pointIndex].uri;
-            currentScore = allSongs[pointIndex].weighted_score || 0;
-            currentIntensity = document.getElementById("moodIntensity").value;
-            const trackId = currentSongUri.split(':').pop();
-            document.getElementById('spotifyIframe').src = `https://open.spotify.com/embed/track/${trackId}`;
-            document.getElementById('songModal').style.display = "flex";
+            showModalWithSong(allSongs[pointIndex]);
         });
+
+        document.getElementById('moodChart').addEventListener('touchstart', function() {
+            setTimeout(() => {
+                const pointIndex = 0;
+                showModalWithSong(allSongs[pointIndex]);
+            }, 300);
+        });
+    }
+
+    function showModalWithSong(song) {
+        currentSongUri = song.uri;
+        currentScore = song.weighted_score || 0;
+        currentIntensity = document.getElementById("moodIntensity").value;
+        const trackId = currentSongUri.split(':').pop();
+        document.getElementById('spotifyIframe').src = `https://open.spotify.com/embed/track/${trackId}`;
+        document.getElementById('songModal').style.display = "flex";
     }
 
     plot3D(allSongs);
@@ -148,7 +159,7 @@
             showToast("Please write a comment before submitting.");
             return;
         }
-        fetch('http://127.0.0.1:8000/feedback', {
+        fetch('https://moodbasedmusicrec.onrender.com/feedback', {
             method: 'POST',
             body: JSON.stringify({
                 song: currentSongUri,
