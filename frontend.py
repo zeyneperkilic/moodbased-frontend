@@ -1,11 +1,42 @@
 from flask import Flask, render_template, request
 import requests
 
+
 app = Flask(__name__)
 
 import os
 API_URL = "https://moodbasedmusicrec.onrender.com"
 
+import sqlite3
+
+def init_db():
+    conn = sqlite3.connect('feedback.db')
+    c = conn.cursor()
+    c.execute('''
+    CREATE TABLE IF NOT EXISTS feedback (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        track_id TEXT,
+        cluster_id INTEGER,
+        comment TEXT,
+        intensity TEXT,
+        sentiment REAL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    conn.commit()
+    conn.close()
+
+
+def add_feedback_sqlite(track_id, cluster_id, comment, intensity, sentiment):
+    conn = sqlite3.connect('feedback.db')
+    c = conn.cursor()
+    c.execute('''
+        INSERT INTO feedback (track_id, cluster_id, comment, intensity, sentiment)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (track_id, cluster_id, comment, intensity, sentiment))
+    conn.commit()
+    conn.close()
+    
 @app.route('/')
 def home():
     return render_template('cover.html')
@@ -65,11 +96,27 @@ def recommend():
         songs=songs,
         all_songs=songs
     )
+
+@app.route('/submit-feedback', methods=['POST'])
+def submit_feedback():
+    track_id = request.form.get("track_id")
+    cluster_id = int(request.form.get("cluster_id"))
+    comment = request.form.get("comment")
+    intensity = request.form.get("intensity", "5")
+    sentiment = float(request.form.get("sentiment", 0))  # bu backend tahmini olabilir
+
+    add_feedback_sqlite(track_id, cluster_id, comment, intensity, sentiment)
+    return redirect(f"/mood-map/{request.form.get('mood_color')}")
 @app.route('/feedback')
 def feedback():
-    response = requests.get(f"{API_URL}/feedback")
-    feedback_data = response.json() if response.status_code == 200 else {}
-    return feedback_data
+    conn = sqlite3.connect('feedback.db')
+    c = conn.cursor()
+    c.execute('SELECT track_id, comment, cluster_id, sentiment, created_at FROM feedback ORDER BY created_at DESC')
+    feedback_list = c.fetchall()
+    conn.close()
+    return render_template('feedback.html', feedback_list=feedback_list)
+
 
 if __name__ == '__main__':
+    init_db()
     app.run(host='0.0.0.0', port=5001, debug=True)
