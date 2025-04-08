@@ -153,8 +153,8 @@
         return;
     }
 
-    // 🔥 Burada güncel intensity değerini slider'dan al
-    currentIntensity = document.getElementById("moodIntensity").value;
+    // ✅ Direkt slider'dan alıyoruz
+    const intensity = document.getElementById("moodIntensity").value;
 
     fetch('/submit-feedback', {
         method: 'POST',
@@ -163,8 +163,8 @@
             track_id: currentSongUri,
             comment: comment,
             cluster_id: currentClusterId,
-            intensity: currentIntensity,
-            sentiment: 0.5,  // backend zaten analiz ediyor
+            intensity: intensity,  // 👈 artık hep güncel değer
+            sentiment: 0.5,
             mood_color: "{{ mood_color }}"
         })
     }).then(() => {
