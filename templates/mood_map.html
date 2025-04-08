@@ -147,28 +147,32 @@
     }
 
     function submitFeedback() {
-        let comment = document.getElementById("commentBox").value;
-        if (comment.trim() === "") {
-            showToast("Please write a comment before submitting.");
-            return;
-        }
-        fetch('/submit-feedback', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                track_id: currentSongUri,
-                comment: comment,
-                cluster_id: currentClusterId,
-                intensity: currentIntensity,
-                sentiment: 0.5,
-                mood_color: "{{ mood_color }}"
-            })
-        }).then(() => {
-            showToast("Feedback received!");
-            document.getElementById("commentBox").value = "";
-            closeModal();
-        });
+    let comment = document.getElementById("commentBox").value;
+    if (comment.trim() === "") {
+        showToast("Please write a comment before submitting.");
+        return;
     }
+
+    // 🔥 Burada güncel intensity değerini slider'dan al
+    currentIntensity = document.getElementById("moodIntensity").value;
+
+    fetch('/submit-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            track_id: currentSongUri,
+            comment: comment,
+            cluster_id: currentClusterId,
+            intensity: currentIntensity,
+            sentiment: 0.5,  // backend zaten analiz ediyor
+            mood_color: "{{ mood_color }}"
+        })
+    }).then(() => {
+        showToast("Feedback received!");
+        document.getElementById("commentBox").value = "";
+        closeModal();
+    });
+}
 
     function showToast(message) {
         const toast = document.getElementById("toast");
