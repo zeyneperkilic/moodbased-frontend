@@ -36,6 +36,14 @@ def add_feedback_sqlite(track_id, cluster_id, comment, intensity, sentiment):
     ''', (track_id, cluster_id, comment, intensity, sentiment))
     conn.commit()
     conn.close()
+
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+analyzer = SentimentIntensityAnalyzer()
+
+def analyze_sentiment(comment):
+    score = analyzer.polarity_scores(comment)
+    return score['compound']
     
 @app.route('/')
 def home():
@@ -103,10 +111,12 @@ def submit_feedback():
     cluster_id = int(request.form.get("cluster_id"))
     comment = request.form.get("comment")
     intensity = request.form.get("intensity", "5")
-    sentiment = float(request.form.get("sentiment", 0))  # bu backend tahmini olabilir
+    sentiment = analyze_sentiment(comment)  # 🧠 gerçek skor burada
+    mood_color = request.form.get("mood_color")
 
     add_feedback_sqlite(track_id, cluster_id, comment, intensity, sentiment)
-    return redirect(f"/mood-map/{request.form.get('mood_color')}")
+    return redirect(f"/mood-map/{mood_color}")
+    
 @app.route('/feedback')
 def feedback():
     conn = sqlite3.connect('feedback.db')
