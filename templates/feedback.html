@@ -6,11 +6,11 @@
 <body>
     <h1>Feedback List</h1>
     <ul>
-    {% for track_id, comment, cluster_id, sentiment, created_at in feedback_list %}
-        <li>
-            <strong>Mood {{ cluster_id }}</strong><br>
-            <em>{{ track_id }}</em>: {{ comment }} (Sentiment: {{ sentiment }})
-        </li>
+    {% for track_id, comment, cluster_id, sentiment, intensity, created_at in feedback_list %}
+    <li>
+        <strong>Mood {{ cluster_id }} | Intensity: {{ intensity }}</strong><br>
+        <em>{{ track_id }}</em>: {{ comment }} (Sentiment: {{ sentiment }})
+    </li>
     {% endfor %}
     </ul>
 </body>
