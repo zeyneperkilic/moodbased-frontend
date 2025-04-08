@@ -111,7 +111,7 @@ def submit_feedback():
 def feedback():
     conn = sqlite3.connect('feedback.db')
     c = conn.cursor()
-    c.execute('SELECT track_id, comment, cluster_id, sentiment, created_at FROM feedback ORDER BY created_at DESC')
+    c.execute('SELECT track_id, comment, cluster_id, sentiment, intensity, created_at FROM feedback ORDER BY created_at DESC')
     feedback_list = c.fetchall()
     conn.close()
     return render_template('feedback.html', feedback_list=feedback_list)
