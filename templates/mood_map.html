@@ -156,6 +156,9 @@
     // ✅ Direkt slider'dan alıyoruz
     const intensity = document.getElementById("moodIntensity").value;
 
+    // ✅ Bu satırı buraya ekle!
+    document.getElementById("intensityInput").value = intensity;
+
     fetch('/submit-feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -163,7 +166,7 @@
             track_id: currentSongUri,
             comment: comment,
             cluster_id: currentClusterId,
-            intensity: intensity,  // 👈 artık hep güncel değer
+            intensity: intensity,
             sentiment: 0.5,
             mood_color: "{{ mood_color }}"
         })
