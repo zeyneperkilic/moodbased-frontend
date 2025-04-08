@@ -81,14 +81,18 @@
     <div id="toast" class="toast">Feedback received!</div>
 
     <script>
-    document.getElementById("moodIntensity").oninput = function() {
-        document.getElementById("moodValue").innerText = this.value;
-        document.getElementById("intensityInput").value = this.value;
-    };
+    window.onload = function () {
+        const slider = document.getElementById("moodIntensity");
+        const display = document.getElementById("moodValue");
+        const hiddenInput = document.getElementById("intensityInput");
 
-    document.getElementById("recommendForm").onsubmit = function(event) {
-        let intensityValue = document.getElementById("moodIntensity").value;
-        document.getElementById("intensityInput").value = intensityValue;
+        display.innerText = slider.value;
+        hiddenInput.value = slider.value;
+
+        slider.oninput = function () {
+            display.innerText = this.value;
+            hiddenInput.value = this.value;
+        };
     };
 
     let allSongs = {{ all_songs | tojson | safe }};
@@ -149,21 +153,22 @@
             return;
         }
         fetch('/submit-feedback', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-        track_id: currentSongUri,
-        comment: comment,
-        cluster_id: currentClusterId,
-        intensity: currentIntensity,
-        sentiment: 0.5,
-        mood_color: "{{ mood_color }}"
-    })
-}).then(() => {
-    showToast("Feedback received!");
-    document.getElementById("commentBox").value = "";
-    closeModal();
-});
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                track_id: currentSongUri,
+                comment: comment,
+                cluster_id: currentClusterId,
+                intensity: currentIntensity,
+                sentiment: 0.5,
+                mood_color: "{{ mood_color }}"
+            })
+        }).then(() => {
+            showToast("Feedback received!");
+            document.getElementById("commentBox").value = "";
+            closeModal();
+        });
+    }
 
     function showToast(message) {
         const toast = document.getElementById("toast");
