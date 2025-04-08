@@ -20,8 +20,8 @@ def mood_map(color):
     color_to_cluster = {
         "black": 0,  # sad
         "yellow": 1,  # happy
-        "red": 2,  # energetic
-        "green": 3  # calm
+        "red": 2,     # energetic
+        "green": 3    # calm
     }
 
     if color not in color_to_cluster:
@@ -29,7 +29,8 @@ def mood_map(color):
 
     cluster_id = color_to_cluster[color]
 
-    response = requests.get(f"{API_URL}/clusters/{cluster_id}")
+    # İlgili mood'un 1000 şarkısını getiriyoruz
+    response = requests.get(f"{API_URL}/clusters/{cluster_id}?limit=1000")
     songs = response.json().get("songs", []) if response.status_code == 200 else []
 
     return render_template(
@@ -38,7 +39,7 @@ def mood_map(color):
         mood_color=color,
         cluster_id=cluster_id,
         songs=songs,
-        all_songs=songs
+        all_songs=songs  # İlk durumda 1000 şarkı da buraya gelsin
     )
 
 @app.route('/recommend', methods=['GET'])
